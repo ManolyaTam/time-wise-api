@@ -2,5 +2,5 @@
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "editor.tabSize": 2,
-  "javascript.format.semicolons": "insert",
+  "javascript.format.semicolons": "insert"
 }
