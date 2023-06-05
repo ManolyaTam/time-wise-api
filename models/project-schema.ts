@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const ProjectSchema = new mongoose.Schema({
   _id: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   name: {
     type: String,
@@ -18,8 +19,7 @@ const ProjectSchema = new mongoose.Schema({
     required: true
   },
   description: {
-    type: String,
-    required: false
+    type: String
   },
 });
 
