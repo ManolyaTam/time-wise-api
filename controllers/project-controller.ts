@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Project } from '../models/model.index';
 import { IProject } from '../types/types.index';
-const projectController = {
 
+const projectController = {
   createProject: async (req: Request, res: Response) => {
     const projectData: IProject = {
       name: req.body.name,
