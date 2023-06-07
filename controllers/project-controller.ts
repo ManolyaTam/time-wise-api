@@ -22,6 +22,19 @@ const projectController = {
         console.log(error);
         res.status(500).json({ error: 'Internal Server Error' });
       });
+  },
+
+  getAllProjects: async (req: Request, res: Response) => {
+    const userEmail = req.body.userEmail;
+
+    try {
+      const projects = await Project.find({ userEmail }).select('name color');
+      res.status(200).json({ success: true, projects });
+    } catch (error) {
+      console.log('error\n');
+      console.log(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 };
 
