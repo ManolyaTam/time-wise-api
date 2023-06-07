@@ -8,19 +8,21 @@ const projectController = {
       name: req.body.name,
       color: req.body.color,
       projectHours: req.body.projectHours,
-      description: req.body.description
+      description: req.body.description,
+      userEmail: req.body.userEmail // Add the userEmail property 
     };
 
     const newProject = new Project(projectData);
 
-    await newProject.save()
+    await newProject
+      .save()
       .then(() => res.status(201).json({ success: true }))
       .catch((error) => {
-        console.log('error\n')
+        console.log('error\n');
         console.log(error);
         res.status(500).json({ error: 'Internal Server Error' });
-      })
+      });
   }
-}
+};
 
 export default projectController;

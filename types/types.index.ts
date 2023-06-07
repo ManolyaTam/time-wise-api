@@ -13,6 +13,7 @@ export interface IProject {
   color: string;
   projectHours: number;
   description?: string;
+  userEmail:string;
 }
 
 export interface IUserInfo {
