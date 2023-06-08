@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import projectRouter from './routes/project-routes';
+import taskRouter from './routes/task-router';
 dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -10,9 +11,12 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 
 app.use('/projects', projectRouter);
+app.use('/tasks', taskRouter);
+
 app.get('/', (req: Request, res: Response) => {
   res.send('Your Server is working fine!');
 });
+
 app.listen(port, () => {
   console.log(`:zap:️[server]: Server is running at http://127.0.0.1:${port}`);
   dbConnect();
