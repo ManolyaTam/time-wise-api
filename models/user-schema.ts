@@ -5,17 +5,25 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  password:  {
-    type:String,
+  password: {
+    type: String,
     required: true
   },
   username: {
-    type:String,
+    type: String,
     required: true
+  },
+  projects: {
+    type: Array,
+    require: true,
+  },
+  tasks: {
+    type: Array,
+    require: true
   }
 
 });
 
- const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
- export default User;
+export default User;
