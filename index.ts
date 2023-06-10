@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import projectRouter from './routes/project-routes';
 import taskRouter from './routes/task-router';
+import signUpRouter from './routes/user-router';
 dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -12,6 +13,8 @@ app.use(express.json());
 
 app.use('/projects', projectRouter);
 app.use('/tasks', taskRouter);
+app.use('/signup', signUpRouter);
+
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Your Server is working fine!');
