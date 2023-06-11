@@ -2,10 +2,15 @@ import { Request, Response } from 'express';
 import User from '../models/user-schema';
 import { IUserInfo } from '../types/types.index';
 
-const userController = {
+const userSignUpController = {
   createUser: async (req: Request, res: Response) => {
     try {
+
       const { email, password, username } = req.body;
+      if(!username){
+        return res.status(400).json({ error: 'usename is requierd' });
+      }
+      
 
       // Check if the email already exists in the database
       const existingUser = await User.findOne({ email });
@@ -31,4 +36,4 @@ const userController = {
   }
 };
 
-export default userController;
+export default userSignUpController;
