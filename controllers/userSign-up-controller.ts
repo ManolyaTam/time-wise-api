@@ -7,11 +7,11 @@ const userSignUpController = {
     try {
 
       const { email, password, username } = req.body;
-      if(!username){
-        return res.status(400).json({ error: 'usename is requierd' });
+      const trimmedUsername = username.trim();
+      if (!trimmedUsername) {
+        return res.status(400).json({ error: 'Username is required' });
       }
       
-
       // Check if the email already exists in the database
       const existingUser = await User.findOne({ email });
       if (existingUser) {
