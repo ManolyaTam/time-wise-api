@@ -6,11 +6,11 @@ const signUpRouter = express.Router();
 const signInRouter = express.Router();
 
 // Create a new user
-signUpRouter.post('/', userSignUpController.createUser );
-signInRouter.post('/',userSignInController.createUser);
+signUpRouter.post('/', userSignUpController.createUser);
+signInRouter.post('/', userSignInController.signIn);
 
 
-export{ 
+export {
   signInRouter,
   signUpRouter
 };
