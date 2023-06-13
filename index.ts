@@ -14,9 +14,8 @@ app.use(express.json());
 
 app.use('/projects', projectRouter);
 app.use('/tasks', taskRouter);
-app.use('/signUp', signUpRouter);
-app.use('/signIn', signInRouter );
-
+app.use('/signup', signUpRouter);
+app.use('/signin', signInRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Your Server is working fine!');
