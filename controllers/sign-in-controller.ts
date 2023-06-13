@@ -8,6 +8,11 @@ const userSignInController = {
     try {
       const { email, password } = req.body;
 
+      // Check if the email or password is missing
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required.' });
+      }
+
       // Check if the email already exists in the database
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -61,7 +66,7 @@ const userSignInController = {
 };
 
 // Generate a JWT token
-function generateToken(payload:{ email: string }) {
+function generateToken(payload: { email: string }) {
   const secretKey = 'your-secret-key';
 
   // Set the expiration time for the token (e.g., 1 hour)
