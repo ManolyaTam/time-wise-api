@@ -8,8 +8,8 @@ const userSignUpController = {
     try {
       const { email, password, username } = req.body;
       // Check if the email or password is missing
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required.' });
+      if (!email || !password || !username) {
+        return res.status(400).json({ error: 'Email, password and username  are required.' });
       }
       const trimmedUsername = username.trim();
       if (!trimmedUsername) {
