@@ -1,9 +1,16 @@
 import express from 'express';
-import userController from '../controllers/userSign-up-controller';
+import userSignInController from '../controllers/sign-in-controller';
+import userSignUpController from '../controllers/userSign-up-controller';
 
 const signUpRouter = express.Router();
+const signInRouter = express.Router();
 
 // Create a new user
-signUpRouter.post('/', userController.createUser);
+signUpRouter.post('/', userSignUpController.createUser);
+signInRouter.post('/', userSignInController.signIn);
 
-export default signUpRouter;
+
+export {
+  signInRouter,
+  signUpRouter
+};
