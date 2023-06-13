@@ -6,7 +6,6 @@ import projectRouter from './routes/project-routes';
 import taskRouter from './routes/task-router';
 import { signUpRouter } from './routes/user-router';
 import { signInRouter } from './routes/user-router';
-import verifyToken from './middleware/auth';
 dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -17,10 +16,6 @@ app.use('/projects', projectRouter);
 app.use('/tasks', taskRouter);
 app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
-
-const auth = verifyToken; app.post("/welcome", auth, (req, res) => {
-  res.status(200).send("Welcome 🙌 ");
-});
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Your Server is working fine!');
