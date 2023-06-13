@@ -7,6 +7,10 @@ const userSignUpController = {
   createUser: async (req: Request, res: Response) => {
     try {
       const { email, password, username } = req.body;
+      // Check if the email or password is missing
+      if (!email || !password || !username) {
+        return res.status(400).json({ error: 'Email, password and username  are required.' });
+      }
       const trimmedUsername = username.trim();
       if (!trimmedUsername) {
         return res.status(400).json({ error: 'Username is required' });
@@ -30,7 +34,7 @@ const userSignUpController = {
       // Save the new user to the database
       await User.create(newUser);
 
-      res.status(201).json({ success: true, password: hashedPassword });
+      res.status(201).json({ success: true });
     } catch (error) {
       console.error('Error occurred during sign up:', error);
       res.status(500).json({ error });
