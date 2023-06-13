@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import jwt, { Secret } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from '../models/user-schema';
-import { IUserInfo } from '../types/types.index';
 require('dotenv').config();
 
 const userSignInController = {
