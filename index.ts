@@ -11,9 +11,12 @@ const app: Express = express();
 const port = process.env.PORT || 3001;
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
-
-app.use('/projects', projectRouter);
-app.use('/tasks', taskRouter);
+import verifyToken from './middleware/auth';
+const auth = verifyToken; app.post("/welcome", auth, (req, res) => {
+  res.status(200).send("Welcome 🙌 ");
+});
+app.use('/projects', auth, projectRouter);
+app.use('/tasks', auth, taskRouter);
 app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
 
