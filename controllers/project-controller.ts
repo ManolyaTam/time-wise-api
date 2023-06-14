@@ -4,24 +4,33 @@ import { IProject } from '../types/types.index';
 
 const projectController = {
   createProject: async (req: Request, res: Response) => {
-    const projectData: IProject = {
-      name: req.body.name,
-      color: req.body.color,
-      projectHours: req.body.projectHours,
-      description: req.body.description,
-      userEmail: req.body.userEmail // Add the userEmail property 
-    };
+    const { name, color, projectHours, description, userEmail } = req.body;
 
-    const newProject = new Project(projectData);
+    try {
+      // Check if the project name already exists
+      const existingProject = await Project.findOne({ name });
 
-    await newProject
-      .save()
-      .then(() => res.status(201).json({ success: true }))
-      .catch((error) => {
-        console.log('error\n');
-        console.log(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      });
+      if (existingProject) {
+        return res.status(409).json({ error: 'Project name already exists' });
+      }
+
+      const projectData: IProject = {
+        name,
+        color,
+        projectHours,
+        description,
+        userEmail,
+      };
+
+      const newProject = new Project(projectData);
+
+      await newProject.save();
+      res.status(201).json({ success: true });
+    } catch (error) {
+      console.log('error\n');
+      console.log(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   },
 
   getAllProjects: async (req: Request, res: Response) => {
