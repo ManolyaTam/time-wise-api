@@ -7,22 +7,30 @@ require('dotenv').config();
 const projectController = {
   createProject: async (req: Request, res: Response) => {
     const { name, color, description } = req.body;
-    let  projectHours = 0;
-    const token = req.body.token || req.query.token || req.headers['token']
+
+    // Check if the required fields are provided
+    if (!name || !color) {
+      return res.status(400).json({ error: 'Name and color is  required fields 😌' });
+    }
+
+    let projectHours = 0;
+    const token = req.body.token || req.query.token || req.headers['token'];
 
     try {
       // Check if the project name already exists
       const existingProject = await Project.findOne({ name });
 
       if (existingProject) {
-        return res.status(409).json({ error: 'Project name already exists' });
+        return res.status(409).json({ error: 'Project name already exists 😁' });
       }
-        // Check if the token is present
-        if (!token) {
-          return res.status(401).json({ error: 'Missing token' });
-        }
+
+      // Check if the token is present
+      if (!token) {
+        return res.status(401).json({ error: 'Missing token' });
+      }
+
       // Verify and decode the token to get the user's email
-      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY|| 'defaultSecretKey');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY || 'defaultSecretKey');
 
       // Type guard to check if the decodedToken is not void
       if (!decodedToken) {
@@ -50,9 +58,9 @@ const projectController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
-  getAllProjects: async (req: Request, res: Response) => {
+  getAllProjectsNames: async (req: Request, res: Response) => {
     const token = req.body.token || req.query.token || req.headers['token']
-  
+
     try {
       // Check if the token is present
       if (!token) {
@@ -60,17 +68,45 @@ const projectController = {
       }
 
       // Verify and decode the token to get the user's email
-      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY|| 'defaultSecretKey');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY || 'defaultSecretKey');
 
       // Type guard to check if the decodedToken is not void
       if (!decodedToken) {
         return res.status(401).json({ error: 'Invalid token' });
       }
-  
+
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
-  
-      const projects = await Project.find({ userEmail }).select('name color');
+
+      const projects = await Project.find({ userEmail }).select('name ');
+      res.status(200).json({ success: true, projects });
+    } catch (error) {
+      console.log('error\n');
+      console.log(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  getAllProjectsData: async (req: Request, res: Response) => {
+    const token = req.body.token || req.query.token || req.headers['token']
+
+    try {
+      // Check if the token is present
+      if (!token) {
+        return res.status(401).json({ error: 'Missing token' });
+      }
+
+      // Verify and decode the token to get the user's email
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY || 'defaultSecretKey');
+
+      // Type guard to check if the decodedToken is not void
+      if (!decodedToken) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+
+      // Type assertion to specify the type as { email: string }
+      const userEmail = (decodedToken as JwtPayload & { email: string }).email;
+
+      const projects = await Project.find({ userEmail }).select('name color  description projectHours');
       res.status(200).json({ success: true, projects });
     } catch (error) {
       console.log('error\n');
