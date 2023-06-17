@@ -7,6 +7,7 @@ export interface ITask {
 }
 
 export interface IProject {
+  _id:string;
   name: string;
   color: string;
   projectHours: number;
