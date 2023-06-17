@@ -9,6 +9,6 @@ projectRouter.post('/', projectController.createProject);
 //Get all project Name
 projectRouter.get('/list', projectController.getAllProjectsNames);
 
-//Get all project Data
-projectRouter.get('/cards', projectController.getAllProjectsData);
+// //Get all project Data
+// projectRouter.get('/cards', projectController.getAllProjectsData);
 export default projectRouter;

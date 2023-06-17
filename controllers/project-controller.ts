@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { Project } from '../models/model.index';
+import { Project, User } from '../models/model.index';
 import { IProject } from '../types/types.index';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+
 require('dotenv').config();
 
 const projectController = {
@@ -10,7 +11,7 @@ const projectController = {
 
     // Check if the required fields are provided
     if (!name || !color) {
-      return res.status(400).json({ error: 'Name and color is  required fields 😌' });
+      return res.status(400).json({ error: 'Name and color are required fields.' });
     }
 
     let projectHours = 0;
@@ -33,13 +34,18 @@ const projectController = {
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
 
+      // Find the user based on the email
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
       // Check if the project name already exists for the current user
-      const existingProject = await Project.findOne({ name, userEmail });
+      const existingProject = user.projects.find((project: IProject) => project.name === name);
 
       if (existingProject) {
-        return res.status(409).json({ error: 'Project name already exists.' });
+        return res.status(409).json({ error: 'Project name already exists for the current user.' });
       }
-
       const projectData: IProject = {
         name,
         color,
@@ -48,9 +54,9 @@ const projectController = {
         userEmail,
       };
 
-      const newProject = new Project(projectData);
+      user.projects.push(projectData); // Add project to user's projects array
 
-      await newProject.save();
+      await user.save();
       res.status(201).json({ success: true });
     } catch (error) {
       console.log('error\n');
