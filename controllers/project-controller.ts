@@ -17,13 +17,6 @@ const projectController = {
     const token = req.body.token || req.query.token || req.headers['token'];
 
     try {
-      // Check if the project name already exists
-      const existingProject = await Project.findOne({ name });
-
-      if (existingProject) {
-        return res.status(409).json({ error: 'Project name already exists 😁' });
-      }
-
       // Check if the token is present
       if (!token) {
         return res.status(401).json({ error: 'Missing token' });
@@ -39,6 +32,13 @@ const projectController = {
 
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
+
+      // Check if the project name already exists for the current user
+      const existingProject = await Project.findOne({ name, userEmail });
+
+      if (existingProject) {
+        return res.status(409).json({ error: 'Project name already exists.' });
+      }
 
       const projectData: IProject = {
         name,
