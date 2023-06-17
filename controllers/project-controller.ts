@@ -64,8 +64,8 @@ const projectController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
-  getAllProjectsNames: async (req: Request, res: Response) => {
-    const token = req.body.token || req.query.token || req.headers['token']
+  getAllProjectsData: async (req: Request, res: Response) => {
+    const token = req.body.token || req.query.token || req.headers['token'];
 
     try {
       // Check if the token is present
@@ -84,7 +84,14 @@ const projectController = {
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
 
-      const projects = await Project.find({ userEmail }).select('name ');
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      const projects = user.projects; // Retrieve the projects array for the user
+
       res.status(200).json({ success: true, projects });
     } catch (error) {
       console.log('error\n');
@@ -92,8 +99,9 @@ const projectController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
-  getAllProjectsData: async (req: Request, res: Response) => {
-    const token = req.body.token || req.query.token || req.headers['token']
+  
+  getAllProjectsNames: async (req: Request, res: Response) => {
+    const token = req.body.token || req.query.token || req.headers['token'];
 
     try {
       // Check if the token is present
@@ -112,7 +120,17 @@ const projectController = {
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
 
-      const projects = await Project.find({ userEmail }).select('name color  description projectHours');
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      const projects = user.projects.map((project: { _id: string; name: string }) => ({
+        id: project._id,
+        name: project.name
+      }))
+
       res.status(200).json({ success: true, projects });
     } catch (error) {
       console.log('error\n');
