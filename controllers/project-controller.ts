@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { Project } from '../models/model.index';
+import { User } from '../models/model.index';
 import { IProject } from '../types/types.index';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { ObjectId } from 'mongodb';
 require('dotenv').config();
 
 const projectController = {
@@ -10,7 +11,7 @@ const projectController = {
 
     // Check if the required fields are provided
     if (!name || !color) {
-      return res.status(400).json({ error: 'Name and color is  required fields 😌' });
+      return res.status(400).json({ error: 'Name and color are required fields.' });
     }
 
     let projectHours = 0;
@@ -33,14 +34,22 @@ const projectController = {
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
 
+      // Find the user based on the email
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
       // Check if the project name already exists for the current user
-      const existingProject = await Project.findOne({ name, userEmail });
+      const existingProject = user.projects.find((project: IProject) => project.name === name);
 
       if (existingProject) {
-        return res.status(409).json({ error: 'Project name already exists.' });
+        return res.status(409).json({ error: 'Project name already exists for the current user.' });
       }
 
       const projectData: IProject = {
+        _id: new ObjectId(),
         name,
         color,
         projectHours,
@@ -48,9 +57,10 @@ const projectController = {
         userEmail,
       };
 
-      const newProject = new Project(projectData);
+      user.projects.push(projectData); // Add project to user's projects array
 
-      await newProject.save();
+      await user.save();
+
       res.status(201).json({ success: true });
     } catch (error) {
       console.log('error\n');
@@ -58,8 +68,8 @@ const projectController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
-  getAllProjectsNames: async (req: Request, res: Response) => {
-    const token = req.body.token || req.query.token || req.headers['token']
+  getAllProjectsData: async (req: Request, res: Response) => {
+    const token = req.body.token || req.query.token || req.headers['token'];
 
     try {
       // Check if the token is present
@@ -78,16 +88,32 @@ const projectController = {
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
 
-      const projects = await Project.find({ userEmail }).select('name ');
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      let projects;
+      try {
+        projects = user.projects.map((project: IProject) => {
+          // Include the id field along with other project data
+          const { _id, ...rest } = project;
+          return { _id: _id ? _id.toString() : null, ...rest };
+        });
+      } catch (error) {
+        console.log('Error retrieving projects:', error);
+        return res.status(500).json({ error: 'Error retrieving projects' });
+      }
+
       res.status(200).json({ success: true, projects });
     } catch (error) {
-      console.log('error\n');
-      console.log(error);
+      console.log('Error:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
-  getAllProjectsData: async (req: Request, res: Response) => {
-    const token = req.body.token || req.query.token || req.headers['token']
+  getAllProjectsNames: async (req: Request, res: Response) => {
+    const token = req.body.token || req.query.token || req.headers['token'];
 
     try {
       // Check if the token is present
@@ -106,14 +132,24 @@ const projectController = {
       // Type assertion to specify the type as { email: string }
       const userEmail = (decodedToken as JwtPayload & { email: string }).email;
 
-      const projects = await Project.find({ userEmail }).select('name color  description projectHours');
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      const projects = user.projects.map((project: IProject) => ({
+        _id: project._id ? project._id.toString() : null,
+        name: project.name
+      }));
+
       res.status(200).json({ success: true, projects });
     } catch (error) {
-      console.log('error\n');
-      console.log(error);
+      console.log('Error:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
-};
 
+
+};
 export default projectController;
