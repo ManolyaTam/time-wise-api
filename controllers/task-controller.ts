@@ -11,7 +11,7 @@ const taskController = {
     const { projectId, beginTime, endTime, description } = req.body;
     // Check if the required fields are provided
     if (!projectId || !beginTime || !endTime || !description) {
-      return res.status(400).json({ error: 'forget required fields please fill it 😌' });
+      return res.status(400).json({ error: 'projectId, beginTime, endTime and description are required' });
     }
 
     const token = req.body.token || req.query.token || req.headers['token'];
