@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 export interface ITask {
+  _id: ObjectId;
   projectId: string;
   description: string;
   beginTime: string;
