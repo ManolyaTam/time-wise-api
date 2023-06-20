@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ITask } from '../types/types.index';
-import { User } from '../models/model.index';
+import { Project, User } from '../models/model.index';
 import { IProject } from '../types/types.index';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
@@ -95,10 +95,12 @@ const taskController = {
 
       // Fetch all tasks for the user
       const tasks = user.tasks;
-      
+
+
       // Map tasks to include additional information
       const tasksWithData = await Promise.all(tasks.map(async (task: ITask) => {
-        const project = await user.projects.findById(task.projectId);
+        const project = user.projects.filter((p: any) => p._id == task.projectId)[0] || null;
+
         if (!project) {
           throw new Error(`Project not found for task with ID: ${task._id}`);
         }
