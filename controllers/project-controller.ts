@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { User } from '../models/model.index';
 import { IProject } from '../types/types.index';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { ITask } from '../types/types.index';
 import { ObjectId } from 'mongodb';
 require('dotenv').config();
 
@@ -68,6 +69,8 @@ const projectController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+
+
   getAllProjectsData: async (req: Request, res: Response) => {
     const token = req.body.token || req.query.token || req.headers['token'];
 
@@ -97,9 +100,21 @@ const projectController = {
       let projects;
       try {
         projects = user.projects.map((project: IProject) => {
-          // Include the id field along with other project data
           const { _id, ...rest } = project;
-          return { _id: _id ? _id.toString() : null, ...rest };
+
+          // Get the tasks for the current project
+          const projectTasks = user.tasks.filter((task: ITask) => task.projectId === project._id.toString());
+
+          // Calculate the total hours for the project based on the tasks' beginTime and endTime
+          const totalHours = projectTasks.reduce((acc: number, task: ITask) => {
+            const beginTime: number = Number(task.beginTime);
+            const endTime: number = Number(task.endTime);
+            const taskHours = (endTime - beginTime) / (1000 * 60 * 60); // Convert milliseconds to hours
+            acc += taskHours;
+            return acc;
+          }, 0);
+
+          return { _id: _id ? _id.toString() : null, ...rest, projectHours: totalHours };
         });
       } catch (error) {
         console.log('Error retrieving projects:', error);

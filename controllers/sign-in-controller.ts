@@ -42,7 +42,7 @@ function generateToken(payload: { email: string }) {
   const secretKey: Secret = process.env.TOKEN_KEY || 'defaultSecretKey';
 
   // Set the expiration time for the token
-  const expiresIn = '2h';
+  const expiresIn = '100h';
 
   // Sign the token with the payload and secret key
   const token = jwt.sign(payload, secretKey, { expiresIn });
