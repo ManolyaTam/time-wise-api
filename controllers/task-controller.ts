@@ -109,7 +109,8 @@ const taskController = {
           description: task.description,
           beginTime: task.beginTime,
           endTime: task.endTime,
-          projectName: project.name
+          projectName: project.name,
+          projectColor:project.color,
         };
       }));
 
