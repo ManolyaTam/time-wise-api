@@ -158,7 +158,7 @@ const projectController = {
         name: project.name
       }));
 
-      res.status(200).json({ success: true, projects });
+      res.status(200).json(projects);
     } catch (error) {
       console.log('Error:', error);
       res.status(500).json({ error: 'Internal Server Error' });
