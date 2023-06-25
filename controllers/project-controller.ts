@@ -121,7 +121,7 @@ const projectController = {
         return res.status(500).json({ error: 'Error retrieving projects' });
       }
 
-      res.status(200).json({ success: true, projects });
+      res.status(200).json(projects);
     } catch (error) {
       console.log('Error:', error);
       res.status(500).json({ error: 'Internal Server Error' });
