@@ -62,7 +62,7 @@ const projectController = {
 
       await user.save();
 
-      res.status(201).json({ success: true });
+      res.status(200).json("true");
     } catch (error) {
       console.log('error\n');
       console.log(error);
