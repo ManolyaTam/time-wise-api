@@ -7,7 +7,10 @@ const taskRouter = express.Router();
 taskRouter.post('/', taskController.createTask);
 
 //get all task data
-taskRouter.get('/',taskController.getAllDataTasks)
+taskRouter.get('/', taskController.getAllDataTasks)
+
+// Delete a task
+taskRouter.delete('/tasks/:taskId', taskController.deleteTask);
 
 
 export default taskRouter;
