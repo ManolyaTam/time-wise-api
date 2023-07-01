@@ -149,21 +149,24 @@ const taskController = {
         return res.status(404).json({ error: 'User not found.' });
       }
 
-      // Find the task by ID and remove it
-      const removedTask = await user.tasks.id(taskId).remove();
+      // Find the index of the task to be deleted
+      const taskIndex = user.tasks.findIndex((task: ITask) => task._id.toString() === taskId);
 
-      if (!removedTask) {
+      if (taskIndex === -1) {
         return res.status(404).json({ error: 'Task not found.' });
       }
+
+      // Remove the task from the tasks array
+      user.tasks.splice(taskIndex, 1);
 
       // Save the user to persist the changes
       await user.save();
 
-      res.status(200).json({ success: true, message: 'Task deleted successfully.' });
+      res.status(200).json('Task deleted successfully.');
     } catch (error) {
       console.log('error\n');
       console.log(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json('Internal Server Error');
     }
   }
 
