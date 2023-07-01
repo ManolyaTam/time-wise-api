@@ -198,31 +198,32 @@ const taskController = {
         return res.status(404).json({ error: 'User not found.' });
       }
 
-      // Find the task by ID
-      const task = user.tasks.find((task: ITask) => task._id.toString() === taskId);
+      // Find the index of the task within the user's tasks array
+      const taskIndex = user.tasks.findIndex((task: ITask) => task._id.toString() === taskId);
 
-      if (!task) {
+      if (taskIndex === -1) {
         return res.status(404).json({ error: 'Task not found.' });
       }
 
       // Update the task properties
       if (description) {
-        task.description = description;
+        user.tasks[taskIndex].description = description;
       }
       if (beginTime) {
-        task.beginTime = beginTime;
+        user.tasks[taskIndex].beginTime = beginTime;
       }
       if (endTime) {
-        task.endTime = endTime;
+        user.tasks[taskIndex].endTime = endTime;
       }
+      // Mark the user object as modified
+      user.markModified('tasks');
 
       // Save the user to persist the changes
       await user.save();
 
-      console.log("Updated Task:", task);
-      console.log("User Tasks After Update:", user.tasks);
+      const updatedTask = user.tasks[taskIndex];
 
-      res.status(200).json({ message: 'Task updated successfully.', task });
+      res.status(200).json('Task updated successfully.');
     } catch (error) {
       console.log('error\n');
       console.log(error);
@@ -231,5 +232,4 @@ const taskController = {
   }
 
 };
-
 export default taskController;
