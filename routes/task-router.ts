@@ -11,6 +11,8 @@ taskRouter.get('/', taskController.getAllDataTasks)
 
 // Delete a task
 taskRouter.delete('/:taskId', taskController.deleteTask);
+//update task
+taskRouter.put('/:taskId', taskController.updateTask);
 
 
 export default taskRouter;

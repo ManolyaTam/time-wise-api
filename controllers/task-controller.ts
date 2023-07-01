@@ -168,9 +168,68 @@ const taskController = {
       console.log(error);
       res.status(500).json('Internal Server Error');
     }
+  },
+  updateTask: async (req: Request, res: Response) => {
+    const token = req.body.token || req.query.token || req.headers['token'];
+    const taskId = req.params.taskId;
+    const { description, beginTime, endTime } = req.body;
+
+    try {
+      // Check if the token is present
+      if (!token) {
+        return res.status(401).json({ error: 'Missing token' });
+      }
+
+      // Verify and decode the token to get the user's email
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY || 'defaultSecretKey');
+
+      // Type guard to check if the decodedToken is not void
+      if (!decodedToken) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+
+      // Type assertion to specify the type as { email: string }
+      const userEmail = (decodedToken as JwtPayload & { email: string }).email;
+
+      // Find the user based on the email
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      // Find the index of the task within the user's tasks array
+      const taskIndex = user.tasks.findIndex((task: ITask) => task._id.toString() === taskId);
+
+      if (taskIndex === -1) {
+        return res.status(404).json({ error: 'Task not found.' });
+      }
+
+      // Update the task properties
+      if (description) {
+        user.tasks[taskIndex].description = description;
+      }
+      if (beginTime) {
+        user.tasks[taskIndex].beginTime = beginTime;
+      }
+      if (endTime) {
+        user.tasks[taskIndex].endTime = endTime;
+      }
+      // Mark the user object as modified
+      user.markModified('tasks');
+
+      // Save the user to persist the changes
+      await user.save();
+
+      const updatedTask = user.tasks[taskIndex];
+
+      res.status(200).json('Task updated successfully.');
+    } catch (error) {
+      console.log('error\n');
+      console.log(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 
 };
-
 export default taskController;
-
