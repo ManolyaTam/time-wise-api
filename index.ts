@@ -12,6 +12,7 @@ const port = process.env.PORT || 3001;
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 import verifyToken from './middleware/auth';
+import DashboardRouter from './routes/dashboard-router';
 const auth = verifyToken; app.post("/welcome", auth, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 });
@@ -19,7 +20,7 @@ app.use('/projects', auth, projectRouter);
 app.use('/tasks', auth, taskRouter);
 app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
-
+app.use('/dashboard', DashboardRouter);
 app.get('/', (req: Request, res: Response) => {
   res.send('Your Server is working fine!');
 });
