@@ -230,6 +230,5 @@ const taskController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
-
 };
 export default taskController;
