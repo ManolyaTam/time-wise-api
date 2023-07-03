@@ -81,6 +81,7 @@ const taskController = {
             endTime: task.endTime,
             projectName: project.name,
             projectColor: project.color,
+            status : task.status,
           };
         })
       );
