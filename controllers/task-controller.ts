@@ -17,7 +17,7 @@ const taskController = {
         .json({ error: "projectId, beginTime and description are required" });
     }
 
-   // const token = req.body.token || req.query.token || req.headers["token"];
+    // const token = req.body.token || req.query.token || req.headers["token"];
 
     try {
       if (!user) {
@@ -40,12 +40,12 @@ const taskController = {
         beginTime,
         description,
         userEmail: user.email,
-        status : Status.RUNNING
+        status: Status.RUNNING,
       };
 
       user.tasks.push(taskData); // Add task to user's tasks array
       await user.save();
-      res.status(201).json({ success: true });
+      res.status(201).json({ taskID: taskData._id, status: taskData.status });
     } catch (error) {
       console.log("error\n");
       console.log(error);
@@ -81,7 +81,7 @@ const taskController = {
             endTime: task.endTime,
             projectName: project.name,
             projectColor: project.color,
-            status : task.status,
+            status: task.status,
           };
         })
       );
