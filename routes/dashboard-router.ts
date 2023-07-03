@@ -1,8 +1,8 @@
 import express from 'express';
-import taskDashboardController from '../controllers/task-dashboard-controller';
-const DashboardRouter = express.Router();
+import barChartController from '../controllers/task-dashboard-controller';
 
-//Get task for dashboard page 
-DashboardRouter.get('/', taskDashboardController.getTaskDashboardData);
+const router = express.Router();
 
-export default DashboardRouter;
+router.get('/bar-chart', barChartController.getBarChartData);
+
+export default router;
