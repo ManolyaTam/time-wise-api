@@ -1,19 +1,23 @@
-import { Request, Response } from 'express';
-import { ITask } from '../types/types.index';
-import { ObjectId } from 'mongodb';
-import { IUser } from '../models/user-schema';
-require('dotenv').config();
+import { Request, Response } from "express";
+import { ITask, Status } from "../types/types.index";
+import { ObjectId } from "mongodb";
+import { IUser } from "../models/user-schema";
+require("dotenv").config();
 
 const taskController = {
   createTask: async (req: Request, res: Response) => {
     const user: IUser | undefined = req.user;
-    const { projectId, beginTime, endTime, description } = req.body;
+
+    const { projectId, beginTime, description } = req.body;
+
     // Check if the required fields are provided
-    if (!projectId || !beginTime || !endTime || !description) {
-      return res.status(400).json({ error: 'projectId, beginTime, endTime, and description are required' });
+    if (!projectId || !beginTime || !description) {
+      return res
+        .status(400)
+        .json({ error: "projectId, beginTime and description are required" });
     }
 
-    const token = req.body.token || req.query.token || req.headers['token'];
+   // const token = req.body.token || req.query.token || req.headers["token"];
 
     try {
       if (!user) {
@@ -21,26 +25,26 @@ const taskController = {
       }
 
       // Check if the project ID exists in any project within the user's projects array
-      const projectExists = user.projects.some((project: any) => project._id.toString() === projectId);
+      const projectExists = user.projects.some(
+        (project: any) => project._id.toString() === projectId
+      );
 
       if (!projectExists) {
         return res.status(404).json({ error: "Project not found." });
       }
 
       // remember to fix the type and change it from any into what needed
-      const taskData: any = {
+      const taskData: ITask = {
         _id: new ObjectId(),
         projectId,
         beginTime,
-        endTime,
         description,
-        userEmail: user.email
+        userEmail: user.email,
+        status : Status.RUNNING
       };
 
       user.tasks.push(taskData); // Add task to user's tasks array
-
       await user.save();
-
       res.status(201).json({ success: true });
     } catch (error) {
       console.log("error\n");
