@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Status } from "../types/types.index";
 
 const TaskSchema = new mongoose.Schema({
   projectId: {
@@ -15,6 +16,14 @@ const TaskSchema = new mongoose.Schema({
   },
   endTime: {
     type: String,
+    required: false
+  },
+  totalTimeInSeconds: {
+    type: String,
+    required: false
+  },
+  status: {
+    type: Status,
     required: true
   },
   userEmail: {
