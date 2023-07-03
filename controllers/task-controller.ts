@@ -86,7 +86,7 @@ const taskController = {
         })
       );
 
-      res.status(200).json({ success: true, tasks: tasksWithData });
+      res.status(200).json(tasksWithData);
     } catch (error) {
       console.log("error\n");
       console.log(error);
