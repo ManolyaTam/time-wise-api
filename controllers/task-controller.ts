@@ -89,10 +89,7 @@ const taskController = {
       const completedTask = user.tasks[taskIndex];
       console.log("completedTask \n", completedTask);
 
-      res.status(200).send({
-        status: "task completed successfully ",
-        completedTask: completedTask,
-      });
+      res.status(200).json(true);
     } catch (error) {
       console.log("error\n");
       console.log(error);
