@@ -53,6 +53,53 @@ const taskController = {
     }
   },
 
+  completeTask: async (req: Request, res: Response) => {
+    const user: IUser | undefined = req.user;
+    const taskId = req.params.taskId;
+    const { endTime } = req.body;
+
+    try {
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      // Find the index of the task within the user's tasks array
+      const taskIndex = user.tasks.findIndex(
+        (task: ITask) => task._id.toString() === taskId
+      );
+
+      if (taskIndex === -1) {
+        return res.status(404).json({ error: "Task not found." });
+      }
+
+      // complete the task properties//endTime , total task time as well as the status
+      if (endTime) {
+        const startTime = Number(user.tasks[taskIndex].beginTime);
+        const totalTime = Math.floor((Number(endTime) - startTime) / 1000);
+        user.tasks[taskIndex].totalTimeInSeconds = totalTime.toString();
+        user.tasks[taskIndex].endTime = endTime;
+        user.tasks[taskIndex].status = Status.STOPPED;
+      }
+      // Mark the user object as modified
+      user.markModified("tasks");
+
+      // Save the user to persist the changes
+      await user.save();
+
+      const completedTask = user.tasks[taskIndex];
+      console.log("completedTask \n", completedTask);
+
+      res.status(200).send({
+        status: "task completed successfully ",
+        completedTask: completedTask,
+      });
+    } catch (error) {
+      console.log("error\n");
+      console.log(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+
   getAllDataTasks: async (req: Request, res: Response) => {
     const user: IUser | undefined = req.user;
 
