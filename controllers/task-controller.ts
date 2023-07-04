@@ -75,7 +75,7 @@ const taskController = {
       // complete the task properties//endTime , total task time as well as the status
       if (endTime) {
         const startTime = Number(user.tasks[taskIndex].beginTime);
-        const totalTime = Number(endTime) - startTime;
+        const totalTime = Math.floor((Number(endTime) - startTime) / 1000);
         user.tasks[taskIndex].totalTimeInSeconds = totalTime.toString();
         user.tasks[taskIndex].endTime = endTime;
         user.tasks[taskIndex].status = Status.STOPPED;
