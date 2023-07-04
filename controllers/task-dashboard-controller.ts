@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ITask } from '../types/types.index';
 import { IProject } from '../models/project-schema';
 require('dotenv').config();
+
 const barChartController = {
   getBarChartData: async (req: Request, res: Response) => {
     const { startDate, endDate } = req.query;
@@ -37,7 +38,7 @@ const barChartController = {
 
       // Filter tasks within the given date range for the user
       const tasks = user.tasks.filter((task: ITask) => {
-        const taskDate = task.beginTime
+        const taskDate = task.beginTime;
         if (!startDate) {
           return res.status(400).json({ error: 'Missing startDate' });
         }
@@ -60,9 +61,9 @@ const barChartController = {
         }
 
         // Perform the comparison
-        return taskDate >= parsedStartDate && taskDate <= parsedEndDate;;
-
+        return taskDate >= parsedStartDate && taskDate <= parsedEndDate;
       });
+
       // Map tasks to include additional information
       const tasksWithData = tasks.reduce((result: any[], task: ITask) => {
         const project = user.projects.find((p: IProject) => p._id.toString() === task.projectId.toString()) || null;
@@ -103,14 +104,34 @@ const barChartController = {
       }, []);
 
       // Format the result to match the desired output structure
-      const timeline = tasksWithData.map((item: any) => {
+      const timeline = tasksWithData.map((item: { [key: string]: number }) => {
         const formattedItem: any = {
           date: item.date,
         };
 
+        let totalHours = 0;
+        let totalProjects = 0;
+
         for (const [project, hours] of Object.entries(item)) {
           if (project !== 'date') {
-            formattedItem[project] = hours;
+            totalHours += hours;
+            totalProjects++;
+          }
+        }    
+          
+        for (const [project, hours] of Object.entries(item)) {
+          if (project !== 'date') {
+            const percentage = totalHours === 0 ? 0 : (hours / totalHours) * 100;
+            formattedItem[project] = percentage.toFixed(1);
+          }
+        }
+
+        // If there is only one project, convert the percentage to rounded hours
+        if (totalProjects === 1) {
+          for (const [project, hours] of Object.entries(item)) {
+            if (project !== 'date') {
+              formattedItem[project] = Math.round((hours / totalHours) * 100) / 100;
+            }
           }
         }
 
@@ -118,15 +139,12 @@ const barChartController = {
       });
 
       res.status(200).json({ success: true, timeline: timeline });
-
-
     } catch (error) {
       console.log('error\n');
       console.log(error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-  }
+  },
 };
 
 export default barChartController;
-
