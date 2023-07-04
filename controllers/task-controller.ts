@@ -126,7 +126,7 @@ const taskController = {
             projectName: project.name,
             projectColor: project.color,
             status: task.status,
-            totalTimeInSeconds : task.totalTimeInSeconds,
+            totalTimeInSeconds: task.totalTimeInSeconds,
           };
         })
       );
