@@ -196,9 +196,13 @@ const taskController = {
       }
       if (beginTime) {
         user.tasks[taskIndex].beginTime = beginTime;
+        user.tasks[taskIndex].totalTimeInSeconds =
+          user.tasks[taskIndex].endTime - beginTime;
       }
       if (endTime) {
         user.tasks[taskIndex].endTime = endTime;
+        user.tasks[taskIndex].totalTimeInSeconds =
+          endTime - user.tasks[taskIndex].beginTime;
       }
       // Mark the user object as modified
       user.markModified("tasks");
