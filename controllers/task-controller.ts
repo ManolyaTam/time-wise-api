@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { ITask, Status } from "../types/types.index";
+import { IProject, ITask, Status } from "../types/types.index";
 import { ObjectId } from "mongodb";
 import { IUser } from "../models/user-schema";
+import { calculate } from "../utils/edit-project-hour";
 require("dotenv").config();
 
 const taskController = {
@@ -26,7 +27,7 @@ const taskController = {
 
       // Check if the project ID exists in any project within the user's projects array
       const projectExists = user.projects.some(
-        (project: any) => project._id.toString() === projectId
+        (project: IProject) => project._id.toString() === projectId
       );
 
       if (!projectExists) {
@@ -196,13 +197,20 @@ const taskController = {
       }
       if (beginTime) {
         user.tasks[taskIndex].beginTime = beginTime;
-        user.tasks[taskIndex].totalTimeInSeconds =
-          user.tasks[taskIndex].endTime - beginTime;
+        user.tasks[taskIndex].totalTimeInSeconds = (
+          Number(user.tasks[taskIndex].endTime) - beginTime
+        ).toString();
+        const endTime = user.tasks[taskIndex].endTime;
+        calculate(beginTime, endTime || "0", user, taskId);
       }
       if (endTime) {
         user.tasks[taskIndex].endTime = endTime;
-        user.tasks[taskIndex].totalTimeInSeconds =
-          endTime - user.tasks[taskIndex].beginTime;
+        user.tasks[taskIndex].totalTimeInSeconds = (
+          endTime - Number(user.tasks[taskIndex].beginTime)
+        ).toString();
+        const beginTime = user.tasks[taskIndex].beginTime;
+        calculate(beginTime, endTime || "0", user, taskId);
+
       }
       // Mark the user object as modified
       user.markModified("tasks");
@@ -210,7 +218,7 @@ const taskController = {
       // Save the user to persist the changes
       await user.save();
 
-      const updatedTask = user.tasks[taskIndex];
+      // const updatedTask = user.tasks[taskIndex];
 
       res.status(200).json("Task updated successfully.");
     } catch (error) {
