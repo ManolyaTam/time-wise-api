@@ -105,7 +105,7 @@ const barChartController = {
 
       }
 
-      res.status(200).json({ success: true, timeline });
+      res.status(200).json( timeline );
     } catch (error) {
       res.status(500).json({ error: 'Internal Server Error' });
     }
