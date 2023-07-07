@@ -45,6 +45,7 @@ const taskController = {
       };
 
       user.tasks.push(taskData); // Add task to user's tasks array
+      calculate(beginTime, taskData._id.toString(), user, "0");
       await user.save();
       res.status(201).json({ taskID: taskData._id, status: taskData.status });
     } catch (error) {
@@ -80,6 +81,7 @@ const taskController = {
         user.tasks[taskIndex].totalTimeInSeconds = totalTime.toString();
         user.tasks[taskIndex].endTime = endTime;
         user.tasks[taskIndex].status = Status.STOPPED;
+        calculate(user.tasks[taskIndex].beginTime, taskId, user, endTime);
       }
       // Mark the user object as modified
       user.markModified("tasks");
@@ -89,7 +91,7 @@ const taskController = {
 
       const completedTask = user.tasks[taskIndex];
       console.log("completedTask \n", completedTask);
-
+      console.log('projects array : ', user.projects)
       res.status(200).json(true);
     } catch (error) {
       console.log("error\n");
@@ -201,7 +203,7 @@ const taskController = {
           Number(user.tasks[taskIndex].endTime) - beginTime
         ).toString();
         const endTime = user.tasks[taskIndex].endTime;
-        calculate(beginTime, endTime || "0", user, taskId);
+        calculate(beginTime, taskId, user, endTime || Date.now().toString());
       }
       if (endTime) {
         user.tasks[taskIndex].endTime = endTime;
@@ -209,8 +211,7 @@ const taskController = {
           endTime - Number(user.tasks[taskIndex].beginTime)
         ).toString();
         const beginTime = user.tasks[taskIndex].beginTime;
-        calculate(beginTime, endTime || "0", user, taskId);
-
+        calculate(beginTime, taskId, user, endTime || Date.now().toString());
       }
       // Mark the user object as modified
       user.markModified("tasks");

@@ -33,7 +33,7 @@ export const calculate = (
     project.projectEndTime = Number(endTime);
   }
 
-  if (project.projectEndTime && project.projectStartTime) {
+  if (project.projectEndTime || project.projectStartTime) {
     project.projectHours = project.projectEndTime - project.projectStartTime;
     console.log("total project hours: ", project.projectHours);
     return true;

@@ -40,6 +40,8 @@ const projectController = {
         projectHours,
         description,
         userEmail: userEmail || "",
+        projectStartTime: 0,
+        projectEndTime: 0,
       };
 
       const user = req.user;
@@ -79,11 +81,11 @@ const projectController = {
             (task: ITask) => task.projectId === project._id.toString()
           );
 
-          // Calculate the total hours for the project based on the tasks' beginTime and endTime
+          //  Calculate the total hours for the project based on the tasks' beginTime and endTime
           const totalHours = projectTasks.reduce((acc: number, task: ITask) => {
             const beginTime: number = Number(task.beginTime);
             const endTime: number = Number(task.endTime);
-            const taskHours = (endTime - beginTime) / (1000 * 60 * 60); // Convert milliseconds to hours
+            const taskHours = endTime - beginTime; // Convert milliseconds to hours
             acc += taskHours;
             return acc;
           }, 0);
