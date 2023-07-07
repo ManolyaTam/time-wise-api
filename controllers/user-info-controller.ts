@@ -7,7 +7,6 @@ const getUserFromTokenController = {
     try {
       const token = req.body.token || req.query.token || req.headers['token'];
 
-
       if (!token) {
         return res.status(401).json({ error: 'No token provided.' });
       }
@@ -29,7 +28,7 @@ const getUserFromTokenController = {
       console.error('Error occurred while retrieving user from token:', error);
       res.status(500).json({ error });
     }
-  },
+  }
 };
 
 export default getUserFromTokenController;

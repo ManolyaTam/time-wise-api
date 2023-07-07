@@ -7,8 +7,8 @@ export interface ITask {
   _id: ObjectId;
   projectId: string;
   description: string;
-  beginTime: string;
-  endTime?: string;
+  beginTime: number
+  endTime?: number;
   userEmail: string;
   totalTimeInSeconds?: string;
   status: Status;
