@@ -21,8 +21,6 @@ export interface IProject {
   projectHours?: number;
   description?: string;
   userEmail: string;
-  projectStartTime: number;
-  projectEndTime: number;
 }
 
 export interface IUserInfo {
