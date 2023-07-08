@@ -40,8 +40,6 @@ const projectController = {
         projectHours,
         description,
         userEmail: userEmail || "",
-        projectStartTime: 0,
-        projectEndTime: 0,
       };
 
       const user = req.user;
