@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IProject, ITask, Status } from "../types/types.index";
 import { ObjectId } from "mongodb";
 import { IUser } from "../models/user-schema";
-import { calculate } from "../utils/edit-project-hour";
+// import { calculate } from "../utils/edit-project-hour";
 require("dotenv").config();
 
 const taskController = {
@@ -45,7 +45,7 @@ const taskController = {
       };
 
       user.tasks.push(taskData); // Add task to user's tasks array
-      calculate(beginTime, taskData._id.toString(), user, "0");
+      // calculate(beginTime, taskData._id.toString(), user, "0");
       await user.save();
       res.status(201).json({ taskID: taskData._id, status: taskData.status });
     } catch (error) {
@@ -81,7 +81,7 @@ const taskController = {
         user.tasks[taskIndex].totalTimeInSeconds = totalTime.toString();
         user.tasks[taskIndex].endTime = endTime;
         user.tasks[taskIndex].status = Status.STOPPED;
-        calculate(user.tasks[taskIndex].beginTime, taskId, user, endTime);
+        // calculate(user.tasks[taskIndex].beginTime, taskId, user, endTime);
       }
       // Mark the user object as modified
       user.markModified("tasks");
@@ -203,7 +203,7 @@ const taskController = {
           Number(user.tasks[taskIndex].endTime) - beginTime
         ).toString();
         const endTime = user.tasks[taskIndex].endTime;
-        calculate(beginTime, taskId, user, endTime || Date.now().toString());
+        // calculate(beginTime, taskId, user, endTime || Date.now().toString());
       }
       if (endTime) {
         user.tasks[taskIndex].endTime = endTime;
@@ -211,7 +211,7 @@ const taskController = {
           endTime - Number(user.tasks[taskIndex].beginTime)
         ).toString();
         const beginTime = user.tasks[taskIndex].beginTime;
-        calculate(beginTime, taskId, user, endTime || Date.now().toString());
+        // calculate(beginTime, taskId, user, endTime || Date.now().toString());
       }
       // Mark the user object as modified
       user.markModified("tasks");
