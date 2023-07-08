@@ -201,7 +201,7 @@ const taskController = {
         user.tasks[taskIndex].totalTimeInSeconds = (
           Number(user.tasks[taskIndex].endTime) - beginTime
         ).toString();
-        const endTime = user.tasks[taskIndex].endTime;
+        // const endTime = user.tasks[taskIndex].endTime;
 
       }
       if (endTime) {
@@ -209,8 +209,8 @@ const taskController = {
         user.tasks[taskIndex].totalTimeInSeconds = (
           endTime - Number(user.tasks[taskIndex].beginTime)
         ).toString();
-        const beginTime = user.tasks[taskIndex].beginTime;
-       
+        // const beginTime = user.tasks[taskIndex].beginTime;
+
       }
       // Mark the user object as modified
       user.markModified("tasks");
