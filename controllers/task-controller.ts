@@ -33,7 +33,15 @@ const taskController = {
       if (!projectExists) {
         return res.status(404).json({ error: "Project not found." });
       }
-
+      const projectIndex = user.projects.findIndex((project: IProject) => {
+        project._id.toString() === projectId;
+      })
+      if (user.tasks.length < 1) {
+        user.projects[projectIndex].projectStartTime = beginTime;
+      }
+      else if (Number(user.projects[projectIndex].projectStartTime) >= Number(beginTime)) {
+        user.projects[projectIndex].projectStartTime = beginTime;
+      }
       // remember to fix the type and change it from any into what needed
       const taskData: ITask = {
         _id: new ObjectId(),
@@ -81,6 +89,13 @@ const taskController = {
         user.tasks[taskIndex].totalTimeInSeconds = totalTime.toString();
         user.tasks[taskIndex].endTime = endTime;
         user.tasks[taskIndex].status = Status.STOPPED;
+        // update the project end time
+        const task = user.tasks[taskIndex];
+        const projectId = task.projectId;
+        const projectIndex = user.projects.findIndex((project: IProject) => {
+          project._id.toString() === projectId;
+        })
+        user.projects[projectIndex].projectEndTime = endTime;
         // calculate(user.tasks[taskIndex].beginTime, taskId, user, endTime);
       }
       // Mark the user object as modified
@@ -159,8 +174,33 @@ const taskController = {
         return res.status(404).json({ error: "Task not found." });
       }
 
+      const task = user.tasks[taskIndex];
+      const projectId = task.projectId;
+      const projectIndex = user.projects.findIndex((project: IProject) => {
+        project._id.toString() === projectId;
+      })
+      // const projectStartTime = user.projects[projectIndex].projectStartTime;
+      // const projectEndTime = user.projects[projectIndex].projectEndTime;
+
       // Remove the task from the tasks array
       user.tasks.splice(taskIndex, 1);
+
+      // const length = user.tasks.length - 1;
+      for (const task of user.tasks) {
+        let minValue = Number(task.beginTime)
+        let maxValue = Number(task.endTime)
+        
+        if (Number(task.beginTime) < minValue) {
+          minValue = Number(task.beginTime)
+        }
+        if (Number(task.endTime) > maxValue) {
+          maxValue = Number(task.endTime)
+        }
+
+        user.projects[projectIndex].projectStartTime = minValue.toString();
+        user.projects[projectIndex].projectEndTime = maxValue.toString();
+      }
+
 
       // Save the user to persist the changes
       await user.save();
@@ -201,16 +241,33 @@ const taskController = {
         user.tasks[taskIndex].totalTimeInSeconds = (
           Number(user.tasks[taskIndex].endTime) - beginTime
         ).toString();
-        const endTime = user.tasks[taskIndex].endTime;
-
+        // const endTime = user.tasks[taskIndex].endTime; // maybe there are no need for this now
+        // update the project start time
+        const task = user.tasks[taskIndex];
+        const projectId = task.projectId;
+        const projectIndex = user.projects.findIndex((project: IProject) => {
+          project._id.toString() === projectId;
+        })
+        if (Number(beginTime) <= Number(user.projects[projectIndex].projectStartTime)) {
+          user.projects[projectIndex].projectStartTime = beginTime;
+        }
       }
       if (endTime) {
         user.tasks[taskIndex].endTime = endTime;
         user.tasks[taskIndex].totalTimeInSeconds = (
           endTime - Number(user.tasks[taskIndex].beginTime)
         ).toString();
-        const beginTime = user.tasks[taskIndex].beginTime;
-       
+        // const beginTime = user.tasks[taskIndex].beginTime;// I think there are no need for this now
+
+        // update the project end time
+        const task = user.tasks[taskIndex];
+        const projectId = task.projectId;
+        const projectIndex = user.projects.findIndex((project: IProject) => {
+          project._id.toString() === projectId;
+        })
+        if (Number(endTime) >= Number(user.projects[projectIndex].projectEndTime)) {
+          user.projects[projectIndex].projectEndTime = endTime;
+        }
       }
       // Mark the user object as modified
       user.markModified("tasks");
