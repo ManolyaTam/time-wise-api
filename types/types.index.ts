@@ -18,7 +18,7 @@ export interface IProject {
   _id: ObjectId;
   name: string;
   color: string;
-  projectHours: number;
+  projectHours?: number;
   description?: string;
   userEmail: string;
 }

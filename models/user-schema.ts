@@ -1,11 +1,12 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import { IProject, ITask } from '../types/types.index';
 
 export interface IUser extends Document {
   email: string;
   password: string;
   username?: string;
-  projects: any[];
-  tasks: any[];
+  projects: IProject[];
+  tasks: ITask[];
 }
 
 const UserSchema: Schema<IUser> = new Schema<IUser>({
