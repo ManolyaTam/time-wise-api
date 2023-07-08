@@ -74,13 +74,13 @@ const barChartController = {
           const taskDate = new Date(parseInt(task.beginTime.toString()));
 
           if (taskDate.toLocaleDateString() === formattedDate) {
-            const project = user.projects.find((p: IProject) => p._id.toString() === task.projectId.toString()) || null;
+            const project = (user.projects as IProject[]).find((p: IProject) => p._id.toString() === task.projectId.toString());
 
             if (!project) {
               throw new Error(`Project not found for task with ID: ${task._id}`);
             }
 
-            const duration = task.endTime - task.beginTime;
+            const duration = task.endTime ? task.endTime - task.beginTime : 0;
 
             if (projectsData[project.name]) {
               projectsData[project.name] += duration;
@@ -110,6 +110,70 @@ const barChartController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+  getDoughnutChartData: async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query;
+
+    const token = req.body.token || req.query.token || req.headers['token'];
+
+    try {
+      // Check if the token is present
+      if (!token) {
+        return res.status(401).json({ error: 'Missing token' });
+      }
+
+      // Verify and decode the token to get the user's email
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY || 'defaultSecretKey');
+
+      // Type guard to check if the decodedToken is not void
+      if (!decodedToken) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+
+      // Type assertion to specify the type as { email: string }
+      const userEmail = (decodedToken as JwtPayload & { email: string }).email;
+
+      // Find the user based on the email
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: 'Missing start or end date' });
+      }
+      if (startDate >= endDate) {
+        return res.status(400).json({ error: 'Invalid date range' });
+      }
+
+      const startTimestamp = new Date(parseInt(startDate.toString()));
+      const endTimestamp = new Date(parseInt(endDate.toString()));
+
+      // Filter tasks within the given date range for the user with status "stopped"
+      const stoppedTasks = user.tasks.filter((task: ITask) => {
+        const taskDate = new Date(parseInt(task.beginTime.toString()));
+        return taskDate >= startTimestamp && taskDate <= endTimestamp && task.status === 'stopped';
+      });
+
+      // Calculate total hours for each project in the given range
+      const projectTotals: { name: string; color: string; total: number }[] = [];
+
+      for (const project of user.projects) {
+        const projectTasks = stoppedTasks.filter((task: ITask) => task.projectId === project._id.toString());
+        const totalHours = projectTasks.reduce((acc: number, task: ITask) => {
+          const duration = task.endTime ? task.endTime - task.beginTime : 0;
+          acc += duration;
+          return acc;
+        }, 0);
+        projectTotals.push({ name: project.name, color: project.color, total: totalHours / 3600000 });
+      }
+
+      res.status(200).json(projectTotals);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  
 };
 
 export default barChartController;
