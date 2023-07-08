@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IProject, ITask, Status } from "../types/types.index";
 import { ObjectId } from "mongodb";
 import { IUser } from "../models/user-schema";
-// import { calculate } from "../utils/edit-project-hour";
+
 require("dotenv").config();
 
 const taskController = {
@@ -91,7 +91,6 @@ const taskController = {
 
       const completedTask = user.tasks[taskIndex];
       console.log("completedTask \n", completedTask);
-      console.log('projects array : ', user.projects)
       res.status(200).json(true);
     } catch (error) {
       console.log("error\n");
@@ -203,7 +202,7 @@ const taskController = {
           Number(user.tasks[taskIndex].endTime) - beginTime
         ).toString();
         const endTime = user.tasks[taskIndex].endTime;
-        // calculate(beginTime, taskId, user, endTime || Date.now().toString());
+
       }
       if (endTime) {
         user.tasks[taskIndex].endTime = endTime;
@@ -211,7 +210,7 @@ const taskController = {
           endTime - Number(user.tasks[taskIndex].beginTime)
         ).toString();
         const beginTime = user.tasks[taskIndex].beginTime;
-        // calculate(beginTime, taskId, user, endTime || Date.now().toString());
+       
       }
       // Mark the user object as modified
       user.markModified("tasks");

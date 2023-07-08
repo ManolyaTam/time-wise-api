@@ -1,11 +1,11 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { ITask } from '../types/types.index';
+import { IProject, ITask } from '../types/types.index';
 
 export interface IUser extends Document {
   email: string;
   password: string;
   username?: string;
-  projects: any[];
+  projects: IProject[];
   tasks: ITask[];
 }
 
