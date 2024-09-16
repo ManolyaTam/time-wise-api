@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-import { IProject, ITask } from '../types/types.index';
+import mongoose, { Schema, Document, Model } from "mongoose";
+import { IProject, ITask } from "../types/types.index";
 
 export interface IUser extends Document {
   email: string;
@@ -18,9 +18,6 @@ const UserSchema: Schema<IUser> = new Schema<IUser>({
     type: String,
     required: true,
   },
-  username: {
-    type: String,
-  },
   projects: {
     type: Array,
     required: true,
@@ -31,6 +28,6 @@ const UserSchema: Schema<IUser> = new Schema<IUser>({
   },
 });
 
-const User: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
+const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema);
 
 export default User;
